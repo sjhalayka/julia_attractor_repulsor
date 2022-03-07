@@ -145,12 +145,12 @@ int get_points(void)
 
     const float x_grid_max = 1.5;
     const float x_grid_min = -x_grid_max;
-    const size_t x_res = 30;
+    const size_t x_res = 10;
     const complex<float> x_step_size((x_grid_max - x_grid_min) / (x_res - 1), 0);
 
     const float y_grid_max = 1.5;
     const float y_grid_min = -y_grid_max;
-    const size_t y_res = 30;
+    const size_t y_res = 10;
     const complex<float> y_step_size(0, (y_grid_max - y_grid_min) / (y_res - 1));
 
     const complex<float> C(0.2f, 0.5f);

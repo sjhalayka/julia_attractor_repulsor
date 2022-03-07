@@ -142,7 +142,7 @@ void idle_func(void)
 
 	for (size_t i = 0; i < test_particle_pos.size(); i++)
 	{
-		proceed_Euler(test_particle_pos[i], test_particle_vel[i], grav_constant, dt);
+		proceed_symplectic4(test_particle_pos[i], test_particle_vel[i], grav_constant, dt);
 		positions.push_back(test_particle_pos[i]);
 	}
 
@@ -227,7 +227,7 @@ void draw_objects(void)
     
     glBegin(GL_POINTS);
 
-    glColor4f(0.0, 0.0, 0.0, 0.01);
+    glColor4f(0.0, 0.0, 0.0, 0.1);
     
     for(size_t i = 0; i < positions.size(); i++)
 		glVertex3f(positions[i].x, positions[i].y, positions[i].z);
