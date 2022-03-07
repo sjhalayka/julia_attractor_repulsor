@@ -125,8 +125,8 @@ float iterate_2d(vector< complex<float> >& trajectory_points,
 
     for (short unsigned int i = 0; i < max_iterations; i++)
     {
-        //Z = Z * Z + C;
-        Z = sin(Z) + C * sin(Z);
+        Z = Z * Z + C;
+        //Z = sin(Z) + C * sin(Z);
 
         trajectory_points.push_back(Z);
 

@@ -215,7 +215,10 @@ void draw_objects(void)
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	glPointSize(3.0);
+	if (screenshot_mode)
+		glPointSize(4.0);
+	else
+		glPointSize(1.0);
     
     glBegin(GL_POINTS);
 
