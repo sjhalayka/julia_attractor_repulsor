@@ -39,6 +39,12 @@ custom_math::vector_3 grav_acceleration(const custom_math::vector_3 &pos, const 
 		total_accel += accel;
 	}
 
+	if (total_accel.length() > max_accel)
+	{
+		total_accel.normalize();
+		total_accel *= max_accel;
+	}
+
 	return total_accel;
 }
 
@@ -47,12 +53,6 @@ custom_math::vector_3 grav_acceleration(const custom_math::vector_3 &pos, const 
 void proceed_Euler(custom_math::vector_3 &pos, custom_math::vector_3 &vel, const double G, const double dt)
 {
 	custom_math::vector_3 accel = grav_acceleration(pos, vel, G);
-	
-	if (accel.length() > max_accel)
-	{
-		accel.normalize();
-		accel *= max_accel;
-	}
 
 	vel += accel * dt;
 
@@ -90,12 +90,6 @@ void proceed_symplectic4(custom_math::vector_3& pos, custom_math::vector_3& vel,
 
 	custom_math::vector_3 accel = grav_acceleration(pos, vel, G);
 
-	if (accel.length() > max_accel)
-	{
-		accel.normalize();
-		accel *= max_accel;
-	}
-
 	if (vel.length() > speed_of_light)
 	{
 		vel.normalize();
@@ -120,7 +114,6 @@ void proceed_symplectic4(custom_math::vector_3& pos, custom_math::vector_3& vel,
 		vel *= speed_of_light;
 	}
 
-
 	pos += vel * c[2] * dt;
 	vel += accel * d[2] * dt;
 
@@ -130,7 +123,6 @@ void proceed_symplectic4(custom_math::vector_3& pos, custom_math::vector_3& vel,
 		vel *= speed_of_light;
 	}
 
-
 	pos += vel * c[3] * dt;
 	//	vel += acceleration(pos, vel, ang_vel) * d[3] * dt; // last element d[3] is always 0
 }
@@ -138,14 +130,16 @@ void proceed_symplectic4(custom_math::vector_3& pos, custom_math::vector_3& vel,
 
 void idle_func(void)
 {
-	const double dt = 0.001;
-
-	for (size_t i = 0; i < test_particle_pos.size(); i++)
+	if (add_trajectory_points)
 	{
-		proceed_symplectic4(test_particle_pos[i], test_particle_vel[i], grav_constant, dt);
-		positions.push_back(test_particle_pos[i]);
-	}
+		static const double dt = 0.01;
 
+		for (size_t i = 0; i < test_particle_pos.size(); i++)
+		{
+			proceed_Euler(test_particle_pos[i], test_particle_vel[i], grav_constant, dt);
+			positions.push_back(test_particle_pos[i]);
+		}
+	}
     glutPostRedisplay();
 }
 
@@ -215,20 +209,18 @@ void draw_objects(void)
 	glPushMatrix();
   
 
-    glPointSize(1.0);
-    glLineWidth(1.0f);
 
 
 	glEnable(GL_ALPHA);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	glPointSize(1.0);
+	glPointSize(3.0);
     
     glBegin(GL_POINTS);
 
-    glColor4f(0.0, 0.0, 0.0, 0.1);
-    
+    glColor4f(0.0, 0.0, 0.0, 1);
+		
     for(size_t i = 0; i < positions.size(); i++)
 		glVertex3f(positions[i].x, positions[i].y, positions[i].z);
     
@@ -240,7 +232,7 @@ void draw_objects(void)
 
 	for (size_t i = 0; i < julia_points.size(); i++)
 	{
-		glColor4f(1.0f, 0.5f, 0.0f, 1);
+		glColor4f(1.0f, 0.5f, 0.0f, pow(julia_points_mass[i], 10.0f));
 		glVertex3f(julia_points[i].x, julia_points[i].y, julia_points[i].z);
 	}
 
@@ -347,8 +339,11 @@ void display_func(void)
 		// End text drawing code.
 	}
 
-	glFlush();
-	glutSwapBuffers();
+	if (false == screenshot_mode)
+	{
+		glFlush();
+		glutSwapBuffers();
+	}
 }
 
 void keyboard_func(unsigned char key, int x, int y)
@@ -389,6 +384,16 @@ void keyboard_func(unsigned char key, int x, int y)
 			main_camera.Set();
 			break;
 		}
+	case 'l':
+	{
+		add_trajectory_points = false;
+		take_screenshot(8, "screenshot.tga");
+		add_trajectory_points = true;
+		
+		break;
+	}
+
+
 
 	default:
 		break;

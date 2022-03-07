@@ -1,35 +1,33 @@
-// Shawn Halayka
+// Shawn Halayka -- shalayka@gmail.com
+// June 26, 2010
+//
 // This code and data is in the public domain.
 
 
 #include "uv_camera.h"
 
-const float pi = 4.0f*atan(1.0f);
-const float pi_half = 0.5f*pi;
-const float pi_2 = 2.0f*pi;
-const float epsilon = 1e-6f;
-
-
 
 uv_camera::uv_camera(void)
 {
 	u = v = 0;
-	w = 4;
+	w = 1;
 	fov = 45;
 	near_plane = 1.0;
 	far_plane = 4.0;
 	win_x = win_y = 0;
+
+	//Transform();
 }
 
-void uv_camera::Set(const float u_rad, const float v_rad, const float w_metres, const float fov_deg, const int width_px, const int height_px, float src_near, float src_far)
+void uv_camera::Set(const double u_rad, const double v_rad, const double w_metres, const double fov_deg, const int width_px, const int height_px, double src_near_plane, double src_far_plane)
 {
 	u = u_rad;
 	v = v_rad;
 	w = w_metres;
-	near_plane = src_near;
-	far_plane = src_far;
+	near_plane = src_near_plane;
+	far_plane = src_far_plane;
 
-	static const float lock = epsilon * 1000.0f;
+	static const double lock = numeric_limits<double>::epsilon() * 1000;
 
 	if(u < -pi_half + lock)
 		u = -pi_half + lock;
@@ -44,8 +42,8 @@ void uv_camera::Set(const float u_rad, const float v_rad, const float w_metres, 
 
 	if(w < 0)
 		w = 0;
-//	else if(w > 10000)
-//		w = 10000;
+	else if(w > 10000)
+		w = 10000;
 
 	fov = fov_deg;
 	win_x = width_px;
@@ -78,7 +76,7 @@ void uv_camera::Transform(void)
 void uv_camera::Set(void)
 {
 	// Force a recalculation of the camera vectors and frustum.
-	Set(u, v, w, fov, win_x, win_y, near_plane, far_plane);
+	Set(u, v, w, fov, static_cast<int>(win_x), static_cast<int>(win_y), near_plane, far_plane);
 }
 
 void uv_camera::Set_Large_Screenshot(size_t num_cams, size_t cam_index_x, size_t cam_index_y)
@@ -90,19 +88,19 @@ void uv_camera::Set_Large_Screenshot(size_t num_cams, size_t cam_index_x, size_t
 
 	// Image plane reference:
 	// http://www.songho.ca/opengl/gl_transform.html
-    const float deg_to_rad = (1.0/360.0)*2*pi;
-	float aspect = win_x/win_y;
-    float tangent = tan((fov/2.0)*deg_to_rad);
-    float height = near_plane * tangent; // Half height of near_plane plane.
-    float width = height * aspect; // Half width of near_plane plane.
+    const double deg_to_rad = (1.0/360.0)*2*pi;
+	double aspect = win_x/win_y;
+    double tangent = tan((fov/2.0)*deg_to_rad);
+    double height = near_plane * tangent; // Half height of near_plane plane.
+    double width = height * aspect; // Half width of near_plane plane.
 
-	float cam_width = 2*width/num_cams;
-	float cam_height = 2*height/num_cams;
+	double cam_width = 2*width/num_cams;
+	double cam_height = 2*height/num_cams;
 
-	float left = -width + cam_index_x*cam_width;
-	float right = -width + (cam_index_x + 1)*cam_width;
-	float bottom = -height + cam_index_y*cam_height;
-	float top = -height + (cam_index_y + 1)*cam_height;
+	double left = -width + cam_index_x*cam_width;
+	double right = -width + (cam_index_x + 1)*cam_width;
+	double bottom = -height + cam_index_y*cam_height;
+	double top = -height + (cam_index_y + 1)*cam_height;
 
 	// Instead of gluPerspective...
     glFrustum(left, right, bottom, top, near_plane, far_plane);
