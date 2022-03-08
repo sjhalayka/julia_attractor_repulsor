@@ -59,7 +59,7 @@ const double speed_of_light = 1;
 const double max_accel = speed_of_light * 2;
 const double grav_constant = 1;
 const double lj_attractive_constant = 1;
-const double lj_repulsive_constant = 0.1;
+const double lj_repulsive_constant = 0.01;
 const double lj_attractive_exponent = 2;
 const double lj_repulsive_exponent = 4;
 const size_t num_test_particles = 10000;
@@ -152,7 +152,7 @@ int get_points(void)
     const size_t y_res = 30;
     const complex<float> y_step_size(0, (y_grid_max - y_grid_min) / (y_res - 1));
 
-    const complex<float> C(0.2f, 0.5f);
+    const complex<float> C(0.5f, 0.5f); //  C(0.2f, 0.5f);
 
     complex<float> Z(x_grid_min, y_grid_min);
 
@@ -175,8 +175,6 @@ int get_points(void)
 
             if (length > max_length)
                     max_length = length;
-
-
 
             if (magnitude < threshold)
             {
