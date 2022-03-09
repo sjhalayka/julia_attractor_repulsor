@@ -3,6 +3,7 @@
 
 #include "uv_camera.h"
 #include "custom_math.h"
+#include "image.h"
 
 #include <cstdlib>
 #include <GL/glut.h>       //GLUT Library
@@ -116,16 +117,21 @@ using namespace std;
 
 float iterate_2d(vector< complex<float> >& trajectory_points,
     complex<float> Z,
-    const complex<float> C,
+    complex<float> C,
     const short unsigned int max_iterations,
     const float threshold)
 {
+	// Uncomment for Mandelbrot set
+	//C = Z;
+	//Z = complex<float>(0, 0);
+
     trajectory_points.clear();
     trajectory_points.push_back(Z);
 
     for (short unsigned int i = 0; i < max_iterations; i++)
     {
-        Z = Z * Z + C;
+		Z = Z * Z + C;
+        //Z = Z * Z * Z * Z + C;
         //Z = sin(Z) + C * sin(Z);
 
         trajectory_points.push_back(Z);
@@ -137,19 +143,87 @@ float iterate_2d(vector< complex<float> >& trajectory_points,
     return abs(Z);
 }
 
+
+
+
 int get_points(void)
 {
+	//tga tga_texture;
+	//float_grayscale luma;
+
+	//if (false == convert_tga_to_float_grayscale("cat.tga", tga_texture, luma, true, true, true))
+	//	return 0;
+
+	//double grid_x_pos = -1.5; // Start at minimum x.
+	//double grid_y_pos = 1.5;// grid_y_max; // Start at maximum y.
+
+	//float step_size = 3.0 / static_cast<double>(luma.px);
+
+	//// Begin march.
+	//for (short unsigned int y = 0; y < luma.py; y++, grid_y_pos -= step_size, grid_x_pos = -1.5f)
+	//{
+	//	for (short unsigned int x = 0; x < luma.px; x++, grid_x_pos += step_size)
+	//	{
+	//		float pixel_datum = 0;
+
+	//		if (luma.pixel_data[y * luma.px + x] >= 0.5)
+	//			pixel_datum = 1;
+
+	//		custom_math::vector_3 v;
+	//		v.x = grid_x_pos;
+	//		v.y = grid_y_pos;
+	//		v.z = 0;
+
+	//		julia_points.push_back(v);
+	//		julia_points_mass.push_back(pixel_datum);
+	//	}
+	//}
+
+	//for (size_t i = 0; i < num_test_particles; i++)
+	//{
+	//	float x = rand() / static_cast<float>(RAND_MAX);
+	//	x *= 2;
+	//	x -= 1;
+
+	//	x *= 1.5f;
+
+	//	float y = rand() / static_cast<float>(RAND_MAX);
+	//	y *= 2;
+	//	y -= 1;
+
+	//	y *= 1.5f;
+
+	//	test_particle_pos.push_back(custom_math::vector_3(x, y, 0));
+
+	//	//x = rand() / static_cast<float>(RAND_MAX);
+	//	//x *= 2;
+	//	//x -= 1;
+
+	//	//y = rand() / static_cast<float>(RAND_MAX);
+	//	//y *= 2;
+	//	//y -= 1;
+
+	//	test_particle_vel.push_back(custom_math::vector_3(0, 0, 0));
+	//}
+
+
+
+	//return 0;
+
+
+
+
     const unsigned short int max_iterations = 8;
     const float threshold = 4.0f;
 
     const float x_grid_max = 1.5;
     const float x_grid_min = -x_grid_max;
-    const size_t x_res = 30;
+    const size_t x_res = 100;
     const complex<float> x_step_size((x_grid_max - x_grid_min) / (x_res - 1), 0);
 
     const float y_grid_max = 1.5;
     const float y_grid_min = -y_grid_max;
-    const size_t y_res = 30;
+    const size_t y_res = 100;
     const complex<float> y_step_size(0, (y_grid_max - y_grid_min) / (y_res - 1));
 
     const complex<float> C(0.5f, 0.5f); //  C(0.2f, 0.5f);
@@ -331,14 +405,6 @@ void take_screenshot(size_t num_cams_wide, const char* filename, const bool reve
 
 	out.write(reinterpret_cast<char*>(&pixel_data[0]), num_bytes);
 }
-
-
-
-
-
-
-
-
 
 
 

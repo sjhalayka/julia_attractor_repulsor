@@ -66,68 +66,6 @@ void proceed_Euler(custom_math::vector_3 &pos, custom_math::vector_3 &vel, const
 }
 
 
-// https://www.gamedev.net/forums/topic/701376-weird-circular-orbit-problem/?do=findComment&comment=5402054
-// https://en.wikipedia.org/wiki/Symplectic_integrator
-void proceed_symplectic4(custom_math::vector_3& pos, custom_math::vector_3& vel, const double G, const double dt)
-{
-	static double const cr2 = pow(2.0, 1.0 / 3.0);
-
-	static const double c[4] =
-	{
-		1.0 / (2.0 * (2.0 - cr2)),
-		(1.0 - cr2) / (2.0 * (2.0 - cr2)),
-		(1.0 - cr2) / (2.0 * (2.0 - cr2)),
-		1.0 / (2.0 * (2.0 - cr2))
-	};
-
-	static const double d[4] =
-	{
-		1.0 / (2.0 - cr2),
-		-cr2 / (2.0 - cr2),
-		1.0 / (2.0 - cr2),
-		0.0
-	};
-
-	custom_math::vector_3 accel = grav_acceleration(pos, vel, G);
-
-	if (vel.length() > speed_of_light)
-	{
-		vel.normalize();
-		vel *= speed_of_light;
-	}
-
-	pos += vel * c[0] * dt;
-	vel += accel * d[0] * dt;
-
-	if (vel.length() > speed_of_light)
-	{
-		vel.normalize();
-		vel *= speed_of_light;
-	}
-
-	pos += vel * c[1] * dt;
-	vel += accel * d[1] * dt;
-
-	if (vel.length() > speed_of_light)
-	{
-		vel.normalize();
-		vel *= speed_of_light;
-	}
-
-	pos += vel * c[2] * dt;
-	vel += accel * d[2] * dt;
-
-	if (vel.length() > speed_of_light)
-	{
-		vel.normalize();
-		vel *= speed_of_light;
-	}
-
-	pos += vel * c[3] * dt;
-	//	vel += acceleration(pos, vel, ang_vel) * d[3] * dt; // last element d[3] is always 0
-}
-
-
 void idle_func(void)
 {
 	if (add_trajectory_points)
@@ -461,7 +399,4 @@ void passive_motion_func(int x, int y)
 	mouse_x = x;
 	mouse_y = y;
 }
-
-
-
 
