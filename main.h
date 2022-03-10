@@ -49,12 +49,14 @@ using namespace std;
 const unsigned short int max_iterations = 8;
 const float threshold = 4.0f;
 
-const float x_grid_max = 1.5;
+const float grid_max = 1.5;
+
+const float x_grid_max = grid_max;
 const float x_grid_min = -x_grid_max;
 const size_t x_res = 30;
 const complex<float> x_step_size((x_grid_max - x_grid_min) / (x_res - 1), 0);
 
-const float y_grid_max = 1.5;
+const float y_grid_max = grid_max;
 const float y_grid_min = -y_grid_max;
 const size_t y_res = 30;
 const complex<float> y_step_size(0, (y_grid_max - y_grid_min) / (y_res - 1));
@@ -175,13 +177,13 @@ int get_points(void)
 	//if (false == convert_tga_to_float_grayscale("cat.tga", tga_texture, luma, true, true, true))
 	//	return 0;
 
-	//double grid_x_pos = -1.5; // Start at minimum x.
-	//double grid_y_pos = 1.5;// grid_y_max; // Start at maximum y.
+	//double grid_x_pos = -grid_max; // Start at minimum x.
+	//double grid_y_pos = grid_max;// grid_y_max; // Start at maximum y.
 
 	//float step_size = 3.0 / static_cast<double>(luma.px);
 
 	//// Begin march.
-	//for (short unsigned int y = 0; y < luma.py; y++, grid_y_pos -= step_size, grid_x_pos = -1.5f)
+	//for (short unsigned int y = 0; y < luma.py; y++, grid_y_pos -= step_size, grid_x_pos = -grid_max)
 	//{
 	//	for (short unsigned int x = 0; x < luma.px; x++, grid_x_pos += step_size)
 	//	{
@@ -206,13 +208,13 @@ int get_points(void)
 	//	x *= 2;
 	//	x -= 1;
 
-	//	x *= 1.5f;
+	//	x *= grid_max;
 
 	//	float y = rand() / static_cast<float>(RAND_MAX);
 	//	y *= 2;
 	//	y -= 1;
 
-	//	y *= 1.5f;
+	//	y *= grid_max;
 
 	//	test_particle_pos.push_back(custom_math::vector_3(x, y, 0));
 
@@ -274,31 +276,30 @@ int get_points(void)
     for (size_t i = 0; i < julia_points_mass.size(); i++)
         julia_points_mass[i] = 1.0f - julia_points_mass[i] / max_length;
 
-	for (size_t i = 0; i < num_test_particles; i++)
+	for (size_t i = 0; i < num_test_particles;)
 	{
         float x = rand() / static_cast<float>(RAND_MAX);
         x *= 2;
         x -= 1;
 
-        x *= 1.5f;
+        x *= grid_max;
 
         float y = rand() / static_cast<float>(RAND_MAX);
         y *= 2;
         y -= 1;
 
-        y *= 1.5f;
+		y *= grid_max;
 
-		test_particle_pos.push_back(custom_math::vector_3(x, y, 0));
+		//Z = complex<float>(x, y);
 
-        //x = rand() / static_cast<float>(RAND_MAX);
-        //x *= 2;
-        //x -= 1;
+		//float magnitude = iterate_2d(trajectory_points, Z, C, max_iterations, threshold);
 
-        //y = rand() / static_cast<float>(RAND_MAX);
-        //y *= 2;
-        //y -= 1;
-        
-        test_particle_vel.push_back(custom_math::vector_3(0, 0, 0));
+		if (1)//magnitude >= threshold)
+		{
+			test_particle_pos.push_back(custom_math::vector_3(x, y, 0));
+			test_particle_vel.push_back(custom_math::vector_3(0, 0, 0));
+			i++;
+		}
 	}
 
 
