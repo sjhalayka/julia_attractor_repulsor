@@ -34,14 +34,17 @@ custom_math::vector_3 acceleration(const custom_math::vector_3& pos, const custo
 		float distance = grav_dir.length();
 		grav_dir.normalize();
 
+		//if (julia_points[i].y > 0)
+		//	grav_dir = -grav_dir;
+
 		custom_math::vector_3 grav_accel = grav_dir * (lj_attractive_constant * julia_points_mass[i] / pow(distance, lj_attractive_exponent) - lj_repulsive_constant * julia_points_mass[i] / pow(distance, lj_repulsive_exponent));
 
 		custom_math::vector_3 ang_vel_dir;
-		ang_vel_dir.z = magnetism_constant * julia_points_mass[i] / powf(distance, 2.0f);
+		ang_vel_dir.z = -magnetism_constant * julia_points_mass[i] / powf(distance, 2.0f);
 
 		custom_math::vector_3 magnus_accel = vel.cross(ang_vel_dir);
 
-		total_accel += grav_accel + magnus_accel;
+		total_accel += grav_accel;// +magnus_accel;
 	}
 
 	if (total_accel.length() > max_accel)
