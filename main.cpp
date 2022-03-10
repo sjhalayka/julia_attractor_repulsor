@@ -23,7 +23,7 @@ int main(int argc, char **argv)
 	return 0;
 }
 
-custom_math::vector_3 grav_acceleration(const custom_math::vector_3 &pos, const custom_math::vector_3 &vel, const double G)
+custom_math::vector_3 acceleration(const custom_math::vector_3& pos, const custom_math::vector_3& vel)
 {
 	custom_math::vector_3 total_accel;
 
@@ -34,9 +34,14 @@ custom_math::vector_3 grav_acceleration(const custom_math::vector_3 &pos, const 
 		float distance = grav_dir.length();
 		grav_dir.normalize();
 
-		custom_math::vector_3 accel = grav_dir * (lj_attractive_constant * julia_points_mass[i] / pow(distance, lj_attractive_exponent) - lj_repulsive_constant * julia_points_mass[i] / pow(distance, lj_repulsive_exponent));
+		custom_math::vector_3 grav_accel = grav_dir * (lj_attractive_constant * julia_points_mass[i] / pow(distance, lj_attractive_exponent) - lj_repulsive_constant * julia_points_mass[i] / pow(distance, lj_repulsive_exponent));
 
-		total_accel += accel;
+		custom_math::vector_3 ang_vel_dir;
+		ang_vel_dir.z = magnetism_constant * julia_points_mass[i] / powf(distance, 2.0f);
+
+		custom_math::vector_3 magnus_accel = vel.cross(ang_vel_dir);
+
+		total_accel += grav_accel + magnus_accel;
 	}
 
 	if (total_accel.length() > max_accel)
@@ -50,9 +55,9 @@ custom_math::vector_3 grav_acceleration(const custom_math::vector_3 &pos, const 
 
 
 
-void proceed_Euler(custom_math::vector_3 &pos, custom_math::vector_3 &vel, const double G, const double dt)
+void proceed_Euler(custom_math::vector_3 &pos, custom_math::vector_3 &vel)
 {
-	custom_math::vector_3 accel = grav_acceleration(pos, vel, G);
+	custom_math::vector_3 accel = acceleration(pos, vel);
 
 	vel += accel * dt;
 
@@ -70,14 +75,13 @@ void idle_func(void)
 {
 	if (add_trajectory_points)
 	{
-		static const double dt = 0.01;
-
 		for (size_t i = 0; i < test_particle_pos.size(); i++)
 		{
-			proceed_Euler(test_particle_pos[i], test_particle_vel[i], grav_constant, dt);
+			proceed_Euler(test_particle_pos[i], test_particle_vel[i]);
 			positions.push_back(test_particle_pos[i]);
 		}
 	}
+
     glutPostRedisplay();
 }
 

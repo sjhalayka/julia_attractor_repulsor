@@ -42,18 +42,26 @@ using std::pair;
 using namespace std;
 
 
-void idle_func(void);
-void init_opengl(const int &width, const int &height);
-void reshape_func(int width, int height);
-void display_func(void);
-void keyboard_func(unsigned char key, int x, int y);
-void mouse_func(int button, int state, int x, int y);
-void motion_func(int x, int y);
-void passive_motion_func(int x, int y);
 
-void render_string(int x, const int y, void *font, const string &text);
-void draw_objects(void);
 
+
+
+const unsigned short int max_iterations = 8;
+const float threshold = 4.0f;
+
+const float x_grid_max = 1.5;
+const float x_grid_min = -x_grid_max;
+const size_t x_res = 30;
+const complex<float> x_step_size((x_grid_max - x_grid_min) / (x_res - 1), 0);
+
+const float y_grid_max = 1.5;
+const float y_grid_min = -y_grid_max;
+const size_t y_res = 30;
+const complex<float> y_step_size(0, (y_grid_max - y_grid_min) / (y_res - 1));
+
+const complex<float> C(0.5f, 0.5f); //  C(0.2f, 0.5f);
+
+static const double dt = 0.01;
 
 
 const double speed_of_light = 1;
@@ -63,6 +71,7 @@ const double lj_attractive_constant = 1;
 const double lj_repulsive_constant = 0.01;
 const double lj_attractive_exponent = 2;
 const double lj_repulsive_exponent = 4;
+const double magnetism_constant = 1;
 const size_t num_test_particles = 10000;
 
 vector<custom_math::vector_3> julia_points;
@@ -103,6 +112,18 @@ int mouse_y = 0;
 bool screenshot_mode = false;
 
 bool add_trajectory_points = true;
+
+void idle_func(void);
+void init_opengl(const int& width, const int& height);
+void reshape_func(int width, int height);
+void display_func(void);
+void keyboard_func(unsigned char key, int x, int y);
+void mouse_func(int button, int state, int x, int y);
+void motion_func(int x, int y);
+void passive_motion_func(int x, int y);
+
+void render_string(int x, const int y, void* font, const string& text);
+void draw_objects(void);
 
 
 #include <iostream>
@@ -213,20 +234,7 @@ int get_points(void)
 
 
 
-    const unsigned short int max_iterations = 8;
-    const float threshold = 4.0f;
-
-    const float x_grid_max = 1.5;
-    const float x_grid_min = -x_grid_max;
-    const size_t x_res = 100;
-    const complex<float> x_step_size((x_grid_max - x_grid_min) / (x_res - 1), 0);
-
-    const float y_grid_max = 1.5;
-    const float y_grid_min = -y_grid_max;
-    const size_t y_res = 100;
-    const complex<float> y_step_size(0, (y_grid_max - y_grid_min) / (y_res - 1));
-
-    const complex<float> C(0.5f, 0.5f); //  C(0.2f, 0.5f);
+ 
 
     complex<float> Z(x_grid_min, y_grid_min);
 
