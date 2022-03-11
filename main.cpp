@@ -181,7 +181,7 @@ void draw_objects(void)
 
 		float magnitude = iterate_2d(trajectory_points, Z, C, max_iterations, threshold);
 
-		if (magnitude >= threshold)
+		if (1)//magnitude >= threshold)
 			glVertex3f(positions[i].x, positions[i].y, positions[i].z);
 		}
 	}
